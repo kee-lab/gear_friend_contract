@@ -5,7 +5,7 @@ pub struct KeeBeeMetadata;
 
 impl Metadata for KeeBeeMetadata {
     type Init = In<ActorId>;
-    type Handle = InOut<FTAction, FTEvent>;
+    type Handle = InOut<FTAction, FBSEvent>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -35,19 +35,17 @@ pub enum FTAction {
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum FTEvent {
-    Transfer {
-        from: ActorId,
-        to: ActorId,
-        amount: u128,
+pub enum FBSEvent {
+    Trade {
+        trader: ActorId,
+        subject: ActorId,
+        isBuy: bool,
+        shareAmount: u128,
+        ethAmount: u128,
+        protocolEthAmount: u128,
+        subjectEthAmount: u128,
+        supply: u128,
     },
-    Approve {
-        from: ActorId,
-        to: ActorId,
-        amount: u128,
-    },
-    TotalSupply(u128),
-    Balance(u128),
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]

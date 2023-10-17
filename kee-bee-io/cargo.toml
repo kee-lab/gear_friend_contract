@@ -1,8 +1,0 @@
-[package]
-name = "kee-bee-io"
-version.workspace = true
-edition.workspace = true
-
-[dependencies]
-gstd.workspace = true
-gmeta.workspace = true

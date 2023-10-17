@@ -7,6 +7,7 @@ static mut PROTOCOL_FEE_PERCENT: u128 = 50000000000000000;
 static mut SUBJECT_FEE_PERCENT: u128 = 50000000000000000;
 static mut MAX_AMOUNT: u8 = 1;
 static mut MAX_FEE_PERCENT: u128 = 100000000000000000;
+const ETH1:u128 = 10^18;
 
 #[derive(Debug, Default)]
 pub struct KeeBeeShare {
@@ -38,36 +39,23 @@ extern fn init() {
 }
 
 // event Trade(address trader, address subject, bool isBuy, uint256 shareAmount, uint256 ethAmount, uint256 protocolEthAmount, uint256 subjectEthAmount, uint256 supply);
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub enum FBSEvent {
-    Trade {
-        trader: ActorId,
-        subject: ActorId,
-        isBuy: bool,
-        shareAmount: u128,
-        ethAmount: u128,
-        protocolEthAmount: u128,
-        subjectEthAmount: u128,
-        supply: u128,
-    },
+
+fn getPrice(supply:u128, amount:u128) ->u128{
+    assert!(amount<=maxAmount,"amount too high");
+    let sum1 = if supply == 0 {
+         0
+    }else{
+        (supply - 1 )* (supply) * (2 * (supply - 1) + 1) / 6
+    };
+    let sum2 = if supply == 0 && amount == 1 {
+        0
+    }else{
+        (supply - 1 + amount) * (supply + amount) * (2 * (supply - 1 + amount) + 1) / 6
+    };
+    let summation = sum2 - sum1;
+    return summation * ETH1 / 16000u128;
 }
 
 impl KeeBeeShare {
-    fn getPrice(&self,supply:u128, amount:u128) ->u128{
-        // require(amount<=maxAmount,"amount too high");
-        let sum1 = if supply == 0 {
-             0
-        }else{
-            (supply - 1 )* (supply) * (2 * (supply - 1) + 1) / 6
-        };
-        let sum2 = if supply == 0&& amount == 1 {
-            0
-        }else{
-            (supply - 1 + amount) * (supply + amount) * (2 * (supply - 1 + amount) + 1) / 6
-        };
-        let summation = sum2 - sum1;
-        return summation * 10^18u128 / 16000u128;
-    }
+    
 }

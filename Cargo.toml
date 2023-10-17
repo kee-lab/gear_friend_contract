@@ -1,21 +1,18 @@
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[workspace]
-members = ["kee-bee-io"]
-
-[workspace.package]
+[package]
 edition = "2021"
-version = "0.1.0"
+version = "0.1.1"
 name = "gear_friend_contract"
 readme = "./README.md"
 license = "MIT OR Apache-2.0"
 
-[workspace.dependencies]
+[dependencies]
+kee-bee-io = { path = "kee_bee_io" }
 gmeta = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.0" }
 
 
-[workspace.build-dependencies]
+[build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.0" }
 
-[workspace.dev-dependencies]
+[dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.0" }

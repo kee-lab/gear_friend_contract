@@ -1,5 +1,5 @@
-use kee_bee_io::KeeBeeMetadata;
+use crate::kee_bee_io::KeeBeeMetadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<FungibleTokenMetadata>();
+    gear_wasm_builder::build_with_metadata::<KeeBeeMetadata>();
 }
