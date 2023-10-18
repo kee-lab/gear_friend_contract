@@ -6,12 +6,23 @@ use gstd::{ActorId, Decode, Encode, TypeInfo, String, Vec};
 pub struct KeeBeeMetadata;
 
 impl Metadata for KeeBeeMetadata {
-    type Init = In<ActorId>;
+    type Init = In<InitConfig>;
     type Handle = InOut<FTAction, FBSEvent>;
     type Others = ();
     type Reply = ();
     type Signal = ();
     type State = Out<IoFungibleToken>;
+}
+
+#[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct InitConfig {
+    pub protocol_fee_destination: ActorId,
+    pub protocol_fee_percent:u128,
+    pub subject_fee_percent:u128,
+    pub max_fee_percent:u128,
+    pub max_amount:u8,
 }
 
 

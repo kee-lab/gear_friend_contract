@@ -5,9 +5,9 @@ name = "gear_friend_contract"
 readme = "./README.md"
 license = "MIT OR Apache-2.0"
 
+
 [dependencies]
 kee_bee_io = { path = "kee_bee_io" }
-gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.0" }
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.0" }
 
 
