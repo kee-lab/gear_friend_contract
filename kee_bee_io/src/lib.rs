@@ -1,5 +1,7 @@
+#![no_std]
+
 use gmeta::{Metadata, InOut, In, Out};
-use gstd::{ActorId, Decode, Encode, TypeInfo};
+use gstd::{ActorId, Decode, Encode, TypeInfo, String, Vec};
 
 pub struct KeeBeeMetadata;
 
