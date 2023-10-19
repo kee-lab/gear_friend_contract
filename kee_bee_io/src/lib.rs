@@ -52,11 +52,11 @@ pub enum FBSEvent {
     Trade {
         trader: ActorId,
         subject: ActorId,
-        isBuy: bool,
-        shareAmount: u128,
-        ethAmount: u128,
-        protocolEthAmount: u128,
-        subjectEthAmount: u128,
+        is_buy: bool,
+        share_amount: u128,
+        eth_amount: u128,
+        protocol_eth_amount: u128,
+        subject_eth_amount: u128,
         supply: u128,
     },
 }

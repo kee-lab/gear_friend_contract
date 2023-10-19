@@ -80,11 +80,16 @@ impl KeeBeeShare {
         let protocolFee = price * protocolFeePercent / ETH1;
         let subjectFee = price * subjectFeePercent / ETH1;
         assert!(msg::value() >= price + protocolFee + subjectFee, "Insufficient payment");
-        let share_balance =self.shares_balance.get_mut(&sharesSubject).get_or_insert(Default::default()).get(&msg::source()).get_or_insert(Default::default());
-        *share_balance = share_balance + amount;
-        msg::reply(payload, 0); Trade(msg.sender, sharesSubject, true, amount, price, protocolFee, subjectFee, supply + amount);
-        (bool success1, ) = protocolFeeDestination.call{value: protocolFee}("");
-        (bool success2, ) = sharesSubject.call{value: subjectFee}("");
-        require(success1 && success2, "Unable to send funds");
+        let share_balance = **self.shares_balance.get_mut(&sharesSubject).get_or_insert(Default::default()).get_mut(&msg::source()).get_or_insert(&mut 0u128);
+        share_balance = share_balance + amount;
+        // Trade(msg.sender, sharesSubject, true, amount, price, protocolFee, subjectFee, supply + amount);
+        let trade = FBSEvent::Trade{
+
+        };
+        msg::reply(trade, 0);
+        msg::send(self.protocol_fee_destination,"",protocolFee).expect("send ptotocal fee fail");
+        // (bool success1, ) = protocolFeeDestination.call{value: protocolFee}("");
+        // (bool success2, ) = sharesSubject.call{value: subjectFee}("");
+        msg::send(sharesSubject,"",subjectFee).expect("send subject fee fail");
     }
 }
