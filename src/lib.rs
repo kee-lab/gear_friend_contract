@@ -162,7 +162,7 @@ impl KeeBeeShare {
     }
 
     pub fn set_max_amount(&mut self,max_amount:u8){
-        assert!(self.manager.get(&msg::source()).expect("not manager"),"not manager");
+        self.assert_admin();
         self.max_amount = max_amount;
     }
 
