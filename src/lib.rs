@@ -166,15 +166,18 @@ impl KeeBeeShare {
         self.max_amount = max_amount;
     }
 
-    // function setFeeDestination(address _feeDestination) public onlyManager {
-    //     protocolFeeDestination = _feeDestination;
-    // }
+    pub fn setFeeDestination(protocol_fee_destination:ActorId) {
+        self.assert_admin();
+        self.protocol_fee_destination = protocol_fee_destination;
+    }
 
-    // function setProtocolFeePercent(uint256 _feePercent) public onlyManager {
-    //     protocolFeePercent = _feePercent;
-    // }
+    pub fn setProtocolFeePercent(protocol_fee_percent:u128)  {
+        self.assert_admin();
+        self.protocol_fee_percent = protocol_fee_percent;
+    }
 
-    // function setSubjectFeePercent(uint256 _feePercent) public onlyManager {
-    //     subjectFeePercent = _feePercent;
-    // }
+    pub fn setSubjectFeePercent(subject_fee_percent:u128) {
+        self.assert_admin();
+        self.subject_fee_percent = subject_fee_percent;
+    }
 }
