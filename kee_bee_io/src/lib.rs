@@ -7,11 +7,11 @@ pub struct KeeBeeMetadata;
 
 impl Metadata for KeeBeeMetadata {
     type Init = In<InitConfig>;
-    type Handle = InOut<FTAction, FBSEvent>;
+    type Handle = InOut<KBAction, KBEvent>;
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Out<IoFungibleToken>;
+    type State = Out<IoKeeBeeShare>;
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
@@ -29,26 +29,21 @@ pub struct InitConfig {
 #[derive(Debug, Decode, Encode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum FTAction {
-    Mint(u128),
-    Burn(u128),
-    Transfer {
-        from: ActorId,
-        to: ActorId,
+pub enum KBAction {
+    BuyShare {
+        shares_subject: ActorId,
         amount: u128,
     },
-    Approve {
-        to: ActorId,
+    SellShare {
+        shares_subject: ActorId,
         amount: u128,
     },
-    TotalSupply,
-    BalanceOf(ActorId),
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum FBSEvent {
+pub enum KBEvent {
     Trade {
         trader: ActorId,
         subject: ActorId,
@@ -64,11 +59,13 @@ pub enum FBSEvent {
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct IoFungibleToken {
-    pub name: String,
-    pub symbol: String,
-    pub total_supply: u128,
-    pub balances: Vec<(ActorId, u128)>,
-    pub allowances: Vec<(ActorId, Vec<(ActorId, u128)>)>,
-    pub decimals: u8,
+pub struct IoKeeBeeShare {
+    pub shares_balance: Vec<(ActorId, Vec<(ActorId, u128)>)>,
+    pub share_supply: Vec<(ActorId, u128)>,
+    pub manager: Vec<(ActorId, bool)>,
+    pub protocol_fee_destination: ActorId,
+    pub protocol_fee_percent: u128,
+    pub subject_fee_percent: u128,
+    pub max_fee_percent: u128,
+    pub max_amount: u8,
 }
