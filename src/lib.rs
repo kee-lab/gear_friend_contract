@@ -1,14 +1,14 @@
 #![no_std]
 
-use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
-use kee_bee_io::{FBSEvent, InitConfig};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId};
+use kee_bee_io::{FBSEvent, InitConfig, KBAction, IoKeeBeeShare};
 
 pub mod utils;
 
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
 const ETH1: u128 = 10 ^ 18;
 
-#[derive(Debug, Default)]
+#[derive(Debug,Clone, Default)]
 pub struct KeeBeeShare {
     pub shares_balance: HashMap<ActorId, HashMap<ActorId, u128>>,
     pub share_supply: HashMap<ActorId, u128>,
@@ -21,7 +21,7 @@ pub struct KeeBeeShare {
 }
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     let init_config: InitConfig = msg::load().expect("Unable to decode protocoal fee destination");
     let mut kee_bee_share = KeeBeeShare {
         protocol_fee_destination: init_config.protocol_fee_destination,
@@ -35,11 +35,7 @@ extern "C" fn init() {
     unsafe {
         KEE_BEE_SHARE = Some(kee_bee_share);
     }
-    // isManager[msg.sender] = true;
-    // protocolFeeDestination = _protocolFeeDestination;
 }
-
-// event Trade(address trader, address subject, bool isBuy, uint256 shareAmount, uint256 ethAmount, uint256 protocolEthAmount, uint256 subjectEthAmount, uint256 supply);
 
 impl KeeBeeShare {
     fn get_price(&self, supply: u128, amount: u128) -> u128 {
@@ -161,20 +157,83 @@ impl KeeBeeShare {
         msg::reply(trade, 0).unwrap();
     }
 
-    pub fn set_max_amount(&mut self,max_amount:u8){
+    pub fn set_max_amount(&mut self, max_amount: u8) {
         self.assert_admin();
         self.max_amount = max_amount;
     }
 
-    // function setFeeDestination(address _feeDestination) public onlyManager {
-    //     protocolFeeDestination = _feeDestination;
-    // }
+    pub fn set_fee_destination(&mut self, _feeDestination: ActorId) {
+        self.assert_admin();
+        self.protocol_fee_destination = _feeDestination;
+    }
 
-    // function setProtocolFeePercent(uint256 _feePercent) public onlyManager {
-    //     protocolFeePercent = _feePercent;
-    // }
+    pub fn set_protocol_fee_percent(&mut self, _fee_percent: u128) {
+        self.assert_admin();
+        self.protocol_fee_percent = _fee_percent;
+    }
 
-    // function setSubjectFeePercent(uint256 _feePercent) public onlyManager {
-    //     subjectFeePercent = _feePercent;
-    // }
+    pub fn set_subject_fee_percent(&mut self, _fee_percent: u128) {
+        self.assert_admin();
+        self.subject_fee_percent = _fee_percent;
+    }
+}
+
+fn common_state() -> IoKeeBeeShare {
+    let state = static_mut_state();
+    let KeeBeeShare {
+        shares_balance,
+        share_supply,
+        manager,
+        protocol_fee_destination,
+        protocol_fee_percent,
+        subject_fee_percent,
+        max_fee_percent,
+        max_amount,
+    } = state.clone();
+
+    let share_supply = share_supply.iter().map(|(k, v)| (*k, *v)).collect();
+    let manager = manager.iter().map(|(k, v)| (*k, *v)).collect();
+    let shares_balance = shares_balance
+        .iter()
+        .map(|(id, balance)| (*id, balance.iter().map(|(k, v)| (*k, *v)).collect()))
+        .collect();
+    IoKeeBeeShare {
+        shares_balance,
+        share_supply,
+        manager,
+        protocol_fee_destination,
+        protocol_fee_percent,
+        subject_fee_percent,
+        max_fee_percent,
+        max_amount,
+    }
+}
+
+fn static_mut_state() -> &'static mut KeeBeeShare {
+    unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) }
+}
+
+#[no_mangle]
+extern fn state() {
+    reply(common_state())
+        .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
+}
+
+fn reply(payload: impl Encode) -> gstd::errors::Result<MessageId> {
+    msg::reply(payload, 0)
+}
+
+
+#[no_mangle]
+extern fn handle() {
+    let action: KBAction = msg::load().expect("Could not load Action");
+    let kee_bee_share: &mut KeeBeeShare = unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) };
+    match action {
+        KBAction::BuyShare{shares_subject,amount} => {
+            kee_bee_share.buy_shares(shares_subject,amount);
+        },
+        KBAction::SellShare{shares_subject,amount} => {
+            kee_bee_share.sell_shares(shares_subject,amount);
+        }
+    }
 }
