@@ -7,7 +7,7 @@ pub struct KeeBeeMetadata;
 
 impl Metadata for KeeBeeMetadata {
     type Init = In<InitConfig>;
-    type Handle = InOut<KBAction, FBSEvent>;
+    type Handle = InOut<KBAction, KBEvent>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -43,7 +43,7 @@ pub enum KBAction {
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum FBSEvent {
+pub enum KBEvent {
     Trade {
         trader: ActorId,
         subject: ActorId,

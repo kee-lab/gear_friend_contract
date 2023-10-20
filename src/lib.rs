@@ -1,9 +1,10 @@
 #![no_std]
 
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId};
-use kee_bee_io::{FBSEvent, InitConfig, KBAction, IoKeeBeeShare};
+use kee_bee_io::{KBEvent, InitConfig, KBAction, IoKeeBeeShare};
 
 pub mod utils;
+pub mod tests;
 
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
 const ETH1: u128 = 10 ^ 18;
@@ -104,7 +105,7 @@ impl KeeBeeShare {
         msg::send(shares_subject, "", subject_fee).expect("send subject fee fail");
 
         // Trade(msg.sender, sharesSubject, true, amount, price, protocolFee, subjectFee, supply + amount);
-        let trade = FBSEvent::Trade {
+        let trade = KBEvent::Trade {
             trader,
             subject: shares_subject,
             is_buy: true,
@@ -144,7 +145,7 @@ impl KeeBeeShare {
         msg::send(trader, "", price - protocol_fee - subject_fee).unwrap();
         msg::send(self.protocol_fee_destination, "", protocol_fee).unwrap();
         msg::send(shares_subject, "", subject_fee).expect("send subject fee fail");
-        let trade = FBSEvent::Trade {
+        let trade = KBEvent::Trade {
             trader,
             subject: shares_subject,
             is_buy: false,
