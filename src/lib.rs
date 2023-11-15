@@ -1,7 +1,7 @@
 #![no_std]
 
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId};
-use kee_bee_io::{KBEvent, InitConfig, KBAction, IoKeeBeeShare};
+use kee_bee_io::{InitConfig, IoKeeBeeShare, KBAction, KBEvent};
 
 pub mod utils;
 // pub mod tests;
@@ -9,7 +9,7 @@ pub mod utils;
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
 const ETH1: u128 = 10 ^ 18;
 
-#[derive(Debug,Clone, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct KeeBeeShare {
     pub shares_balance: HashMap<ActorId, HashMap<ActorId, u128>>,
     pub share_supply: HashMap<ActorId, u128>,
@@ -22,7 +22,7 @@ pub struct KeeBeeShare {
 }
 
 #[no_mangle]
-extern fn init() {
+extern "C" fn init() {
     let init_config: InitConfig = msg::load().expect("Unable to decode protocoal fee destination");
     let mut kee_bee_share = KeeBeeShare {
         protocol_fee_destination: init_config.protocol_fee_destination,
@@ -215,7 +215,7 @@ fn static_mut_state() -> &'static mut KeeBeeShare {
 }
 
 #[no_mangle]
-extern fn state() {
+extern "C" fn state() {
     reply(common_state())
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
 }
@@ -224,17 +224,23 @@ fn reply(payload: impl Encode) -> gstd::errors::Result<MessageId> {
     msg::reply(payload, 0)
 }
 
-
 #[no_mangle]
-extern fn handle() {
+extern "C" fn handle() {
     let action: KBAction = msg::load().expect("Could not load Action");
-    let kee_bee_share: &mut KeeBeeShare = unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) };
+    let kee_bee_share: &mut KeeBeeShare =
+        unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) };
     match action {
-        KBAction::BuyShare{shares_subject,amount} => {
-            kee_bee_share.buy_shares(shares_subject,amount);
-        },
-        KBAction::SellShare{shares_subject,amount} => {
-            kee_bee_share.sell_shares(shares_subject,amount);
+        KBAction::BuyShare {
+            shares_subject,
+            amount,
+        } => {
+            kee_bee_share.buy_shares(shares_subject, amount);
+        }
+        KBAction::SellShare {
+            shares_subject,
+            amount,
+        } => {
+            kee_bee_share.sell_shares(shares_subject, amount);
         }
     }
 }
