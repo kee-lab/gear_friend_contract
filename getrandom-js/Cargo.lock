@@ -31,7 +31,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "getrandom-js"
+name = "getrandom"
 version = "0.2.10"
 dependencies = [
  "cfg-if",

@@ -7,7 +7,7 @@ pub mod utils;
 // pub mod tests;
 
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
-const ETH1: u128 = 10 ^ 18;
+const ETH1: u128 = 10u128.pow(18);
 
 #[derive(Debug,Clone, Default)]
 pub struct KeeBeeShare {
