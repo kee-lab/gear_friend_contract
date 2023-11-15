@@ -7,12 +7,12 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 kee_bee_io = { path = "kee_bee_io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.0" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.1" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.0" }
-gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.0" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
+gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 kee_bee_io = { path = "kee_bee_io" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.0" }
+gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
