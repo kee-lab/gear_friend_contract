@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{Metadata, InOut, In, Out};
-use gstd::{ActorId, Decode, Encode, TypeInfo, String, Vec};
+use gmeta::{In, InOut, Metadata, Out};
+use gstd::{ActorId, Decode, Encode, TypeInfo, Vec};
 
 pub struct KeeBeeMetadata;
 
@@ -19,12 +19,11 @@ impl Metadata for KeeBeeMetadata {
 #[scale_info(crate = gstd::scale_info)]
 pub struct InitConfig {
     pub protocol_fee_destination: ActorId,
-    pub protocol_fee_percent:u128,
-    pub subject_fee_percent:u128,
-    pub max_fee_percent:u128,
-    pub max_amount:u8,
+    pub protocol_fee_percent: u128,
+    pub subject_fee_percent: u128,
+    pub max_fee_percent: u128,
+    pub max_amount: u8,
 }
-
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
 #[codec(crate = gstd::codec)]
