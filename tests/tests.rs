@@ -1,4 +1,4 @@
-use gstd::{Encode, String};
+use gstd::{Encode};
 use gtest::{Program, System};
 use kee_bee_io::*;
 const USERS: &[u64] = &[3, 4, 5];
