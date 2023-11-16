@@ -9,7 +9,6 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 kee_bee_io = { path = "kee_bee_io" }
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.1" }
-# getrandom={version="0.2.10",features = ["js"]}
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
@@ -18,5 +17,5 @@ kee_bee_io = { path = "kee_bee_io" }
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 
-[patch.crates-io]
-getrandom = { path = "./getrandom-js"}
+# [patch.crates-io]
+# getrandom = { path = "./getrandom-js"}
