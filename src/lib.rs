@@ -28,7 +28,7 @@ extern fn init() {
         protocol_fee_destination: init_config.protocol_fee_destination,
         protocol_fee_percent: init_config.protocol_fee_percent,
         subject_fee_percent: init_config.subject_fee_percent,
-        max_fee_percent: 100000000000000000u128,
+        max_fee_percent: 100_000_000_000_000_000u128,
         max_amount: 1,
         ..Default::default()
     };

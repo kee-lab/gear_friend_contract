@@ -5,7 +5,7 @@ const USERS: &[u64] = &[3, 4, 5];
 
 fn init_with_mint(sys: &System) {
     sys.init_logger();
-
+    // load the contract.
     let ft = Program::current_opt(sys);
 
     let res = ft.send(
