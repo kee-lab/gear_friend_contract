@@ -24,3 +24,5 @@ Run all tests:
 cargo xtask node
 cargo t -p "gear_friend_contract*"
 ```
+
+program_id:0x54d349a638e300dd798a6c8465de4ec0bbef8103b8b45d46253e75ca0febfca7
