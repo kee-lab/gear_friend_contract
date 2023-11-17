@@ -4,7 +4,9 @@ use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId};
 use kee_bee_io::{KBEvent, InitConfig, KBAction, IoKeeBeeShare};
 
 pub mod utils;
-// pub mod tests;
+
+#[cfg(not(feature = "std"))]
+mod wasm;
 
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
 const ETH1: u128 = 10u128.pow(18);
