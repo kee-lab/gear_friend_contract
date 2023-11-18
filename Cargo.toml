@@ -1,21 +1,34 @@
-[package]
+[workspace.package]
 edition = "2021"
 version = "0.1.1"
 name = "gear_friend_contract"
 readme = "./README.md"
 license = "MIT OR Apache-2.0"
 
+[workspace]
+members = ["state-v1","kee_bee_io"]
 
-[dependencies]
+[workspace.dependencies]
 kee_bee_io = { path = "kee_bee_io" }
+demo-meta-state-v1 = { path = "state-v1", default-features = false}
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.1" }
 
-[build-dependencies]
+[workspace.build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 kee_bee_io = { path = "kee_bee_io" }
+demo-meta-state-v1 = { path = "state-v1", default-features = false, optional = true }
 
-[dev-dependencies]
+
+[workspace.dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 
 # [patch.crates-io]
 # getrandom = { path = "./getrandom-js"}
+
+# [features]
+# debug = ["gstd/debug"]
+# default = ["std"]
+# std = [
+#     "demo-meta-state-v1/std",
+#     "parity-scale-codec/std",
+# ]
