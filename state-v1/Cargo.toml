@@ -11,5 +11,5 @@ kee_bee_io = { path = "../kee_bee_io" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 
 [features]
-default = ["std"]
-std = []
+default = ["nostd"]
+nostd = []

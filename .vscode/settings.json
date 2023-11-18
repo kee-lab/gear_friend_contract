@@ -1,0 +1,7 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml",
+        "./kee_bee_io/Cargo.toml",
+        "./state-v1/Cargo.toml"
+    ]
+}
