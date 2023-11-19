@@ -1,8 +1,0 @@
-[package]
-name = "kee_bee_io"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.1" }

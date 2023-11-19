@@ -1,9 +1,21 @@
 #![no_std]
 
 use gmeta::{Metadata, InOut, In, Out};
-use gstd::{ActorId, Decode, Encode, TypeInfo, String, Vec};
+use gstd::{ActorId, Decode, Encode, TypeInfo, Vec, collections::HashMap};
 
 pub struct KeeBeeMetadata;
+
+#[derive(Debug,Clone, Default)]
+pub struct KeeBeeShare {
+    pub shares_balance: HashMap<ActorId, HashMap<ActorId, u128>>,
+    pub share_supply: HashMap<ActorId, u128>,
+    pub manager: HashMap<ActorId, bool>,
+    pub protocol_fee_destination: ActorId,
+    pub protocol_fee_percent: u128,
+    pub subject_fee_percent: u128,
+    pub max_fee_percent: u128,
+    pub max_amount: u8,
+}
 
 impl Metadata for KeeBeeMetadata {
     type Init = In<InitConfig>;

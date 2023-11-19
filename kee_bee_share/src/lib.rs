@@ -8,17 +8,6 @@ pub mod utils;
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
 const ETH1: u128 = 10u128.pow(18);
 
-#[derive(Debug,Clone, Default)]
-pub struct KeeBeeShare {
-    pub shares_balance: HashMap<ActorId, HashMap<ActorId, u128>>,
-    pub share_supply: HashMap<ActorId, u128>,
-    pub manager: HashMap<ActorId, bool>,
-    pub protocol_fee_destination: ActorId,
-    pub protocol_fee_percent: u128,
-    pub subject_fee_percent: u128,
-    pub max_fee_percent: u128,
-    pub max_amount: u8,
-}
 
 #[no_mangle]
 extern fn init() {

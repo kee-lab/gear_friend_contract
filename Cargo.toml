@@ -1,33 +1,22 @@
-[package]
+[workspace.package]
+version = "1.0.1"
+authors = ["Share Technologies"]
 edition = "2021"
-version = "0.1.1"
-name = "gear_friend_contract"
-readme = "./README.md"
-license = "MIT OR Apache-2.0"
+license = "GPL-3.0"
+homepage = "https://friend.io"
+repository = "https://github.com/gear-tech/gear"
 
-# [workspace]
-# members = ["state-v1","kee_bee_io"]
+[workspace]
 
-[dependencies]
-kee_bee_io = { path = "kee_bee_io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.1" }
-
-
-[build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
-kee_bee_io = { path = "kee_bee_io" }
-demo-meta-state-v1 = { path = "state-v1", default-features = false, optional = true }
-
-
-[dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
-
-# [patch.crates-io]
-# getrandom = { path = "./getrandom-js"}
-
-[features]
-debug = ["gstd/debug"]
-default = ["nostd"]
-nostd = [
-    "demo-meta-state-v1/nostd",
+members = [
+    "kee_bee_share",
+    "kee_bee_share/kee-bee-io",
+    "kee_bee_share/state-v1"
 ]
+
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.1" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
+gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
+gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }

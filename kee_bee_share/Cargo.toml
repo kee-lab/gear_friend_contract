@@ -1,0 +1,23 @@
+[package]
+edition = "2021"
+version = "0.1.1"
+name = "gear_friend_share"
+readme = "./README.md"
+license.workspace = true
+
+[dependencies]
+gstd.workspace = true
+kee-bee-io = { path = "kee-bee-io"}
+
+
+
+[build-dependencies]
+kee-bee-io = { path = "kee-bee-io"}
+demo-meta-state-v1 = { path = "state-v1"}
+gear-wasm-builder.workspace = true
+
+[dev-dependencies]
+gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
+
+# [patch.crates-io]
+# getrandom = { path = "./getrandom-js"}

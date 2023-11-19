@@ -1,0 +1,8 @@
+[package]
+name = "kee-bee-io"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gmeta.workspace = true
+gstd.workspace = true
