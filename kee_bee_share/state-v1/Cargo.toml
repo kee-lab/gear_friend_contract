@@ -10,7 +10,7 @@ repository.workspace = true
 [dependencies]
 gstd.workspace = true
 gmeta = { workspace = true, features = ["codegen"] }
-kee-bee-io = { path = "../kee-bee-io", default-features = false, optional = true }
+kee-bee-io = { path = "../kee-bee-io"}
 
 [build-dependencies]
 gear-wasm-builder.workspace = true

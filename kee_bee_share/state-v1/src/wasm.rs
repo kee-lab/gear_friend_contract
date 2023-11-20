@@ -2,9 +2,10 @@ use gmeta::metawasm;
 use gstd::prelude::*;
 use kee_bee_io::KeeBeeShare;
 
+const ETH1: u128 = 10u128.pow(18);
+
 #[metawasm]
 pub mod metafns {
-    const ETH1: u128 = 10u128.pow(18);
     pub type State = Option<KeeBeeShare>;
 
     pub fn getPrice(state:State,supply:u128,amount:u128)->u128{

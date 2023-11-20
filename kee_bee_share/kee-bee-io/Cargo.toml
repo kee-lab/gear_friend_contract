@@ -6,3 +6,5 @@ edition = "2021"
 [dependencies]
 gmeta.workspace = true
 gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true

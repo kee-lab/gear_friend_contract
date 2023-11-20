@@ -7,6 +7,7 @@ homepage = "https://friend.io"
 repository = "https://github.com/gear-tech/gear"
 
 [workspace]
+resolver = "2"
 
 members = [
     "kee_bee_share",
@@ -20,3 +21,5 @@ gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], ta
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
+scale-info = { version = "2.5.0", default-features = false }
+parity-scale-codec = { version = "3.6.4", default-features = false }
