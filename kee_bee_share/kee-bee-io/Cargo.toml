@@ -6,5 +6,6 @@ edition = "2021"
 [dependencies]
 gmeta.workspace = true
 gstd.workspace = true
-scale-info.workspace = true
-parity-scale-codec.workspace = true
+# primitive-types = { workspace = true, features = ["scale-info"] }
+# scale-info = { version = "2.5.0", default-features = false }
+# parity-scale-codec = { version = "3.6.4", default-features = false }

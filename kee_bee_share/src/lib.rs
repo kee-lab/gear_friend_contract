@@ -1,22 +1,33 @@
 #![no_std]
 
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId};
-use kee_bee_io::{KBEvent, InitConfig, KBAction, IoKeeBeeShare};
+use kee_bee_io::{InitConfig, IoKeeBeeShare, KBAction, KBEvent, StateQuery, StateReply};
 
 pub mod utils;
 
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
 const ETH1: u128 = 10u128.pow(18);
 
+#[derive(Debug, Clone, Default)]
+pub struct KeeBeeShare {
+    pub shares_balance: HashMap<ActorId, HashMap<ActorId, u128>>,
+    pub share_supply: HashMap<ActorId, u128>,
+    pub manager: HashMap<ActorId, bool>,
+    pub protocol_fee_destination: ActorId,
+    pub protocol_fee_percent: u128,
+    pub subject_fee_percent: u128,
+    pub max_fee_percent: u128,
+    pub max_amount: u8,
+}
 
 #[no_mangle]
-extern fn init() {
+extern "C" fn init() {
     let init_config: InitConfig = msg::load().expect("Unable to decode protocoal fee destination");
     let mut kee_bee_share = KeeBeeShare {
         protocol_fee_destination: init_config.protocol_fee_destination,
         protocol_fee_percent: init_config.protocol_fee_percent,
         subject_fee_percent: init_config.subject_fee_percent,
-        max_fee_percent: 100_000_000_000_000_000u128,
+        max_fee_percent: ETH1,
         max_amount: 1,
         ..Default::default()
     };
@@ -62,6 +73,13 @@ impl KeeBeeShare {
         let protocol_fee = price * self.protocol_fee_percent / ETH1;
         let subject_fee = price * self.subject_fee_percent / ETH1;
         return price + protocol_fee + subject_fee;
+    }
+
+    pub fn get_sell_price_after_fee(&self, shares_subject: ActorId, amount: u128) -> u128 {
+        let price = self.get_sell_price(shares_subject, amount);
+        let protocol_fee = price * self.protocol_fee_percent / ETH1;
+        let subject_fee = price * self.subject_fee_percent / ETH1;
+        return price - protocol_fee - subject_fee;
     }
 
     pub fn buy_shares(&mut self, shares_subject: ActorId, amount: u128) {
@@ -151,9 +169,9 @@ impl KeeBeeShare {
         self.max_amount = max_amount;
     }
 
-    pub fn set_fee_destination(&mut self, _feeDestination: ActorId) {
+    pub fn set_fee_destination(&mut self, _fee_destination: ActorId) {
         self.assert_admin();
-        self.protocol_fee_destination = _feeDestination;
+        self.protocol_fee_destination = _fee_destination;
     }
 
     pub fn set_protocol_fee_percent(&mut self, _fee_percent: u128) {
@@ -167,8 +185,7 @@ impl KeeBeeShare {
     }
 }
 
-fn common_state() -> IoKeeBeeShare {
-    let state = static_mut_state();
+fn common_state(kee_bee_share:KeeBeeShare) -> IoKeeBeeShare {
     let KeeBeeShare {
         shares_balance,
         share_supply,
@@ -199,12 +216,50 @@ fn common_state() -> IoKeeBeeShare {
 }
 
 fn static_mut_state() -> &'static mut KeeBeeShare {
-    unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) }
+    unsafe { KEE_BEE_SHARE.take().expect("get base state error!")};
 }
 
 #[no_mangle]
-extern fn state() {
-    reply(common_state())
+extern "C" fn state() {
+    let kee_bee_share = unsafe { KEE_BEE_SHARE.take().expect("Failed to get state") }.clone();
+    let query: StateQuery = msg::load().expect("Unable to load the state query");
+    let stateReply: StateReply = match query {
+        StateQuery::Price { supply, amount } => {
+            let price = kee_bee_share.get_price(supply, amount);
+            StateReply::Price(price)
+        }
+        StateQuery::BuyPrice {
+            shares_subject,
+            amount,
+        } => {
+            let price = kee_bee_share.get_buy_price(shares_subject, amount);
+            StateReply::Price(price)
+        }
+        StateQuery::SellPrice {
+            shares_subject,
+            amount,
+        } => {
+            let price = kee_bee_share.get_sell_price(shares_subject, amount);
+            StateReply::Price(price)
+        }
+        StateQuery::BuyPriceAfterFee {
+            shares_subject,
+            amount,
+        } => {
+            let price = kee_bee_share.get_buy_price_after_fee(shares_subject, amount);
+            StateReply::Price(price)
+        }
+        StateQuery::SellPriceAfterFee {
+            shares_subject,
+            amount,
+        } => {
+            let price = kee_bee_share.get_sell_price_after_fee(shares_subject, amount);
+            StateReply::Price(price)
+        }
+        StateQuery::FullState => StateReply::FullState(common_state(kee_bee_share)),
+    };
+
+    reply(stateReply)
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
 }
 
@@ -212,17 +267,23 @@ fn reply(payload: impl Encode) -> gstd::errors::Result<MessageId> {
     msg::reply(payload, 0)
 }
 
-
 #[no_mangle]
-extern fn handle() {
+extern "C" fn handle() {
     let action: KBAction = msg::load().expect("Could not load Action");
-    let kee_bee_share: &mut KeeBeeShare = unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) };
+    let kee_bee_share: &mut KeeBeeShare =
+        unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) };
     match action {
-        KBAction::BuyShare{shares_subject,amount} => {
-            kee_bee_share.buy_shares(shares_subject,amount);
-        },
-        KBAction::SellShare{shares_subject,amount} => {
-            kee_bee_share.sell_shares(shares_subject,amount);
+        KBAction::BuyShare {
+            shares_subject,
+            amount,
+        } => {
+            kee_bee_share.buy_shares(shares_subject, amount);
+        }
+        KBAction::SellShare {
+            shares_subject,
+            amount,
+        } => {
+            kee_bee_share.sell_shares(shares_subject, amount);
         }
     }
 }

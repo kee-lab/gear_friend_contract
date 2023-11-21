@@ -1,21 +1,12 @@
 #![no_std]
 
-use gmeta::{Metadata, InOut, In, Out};
-use gstd::{ActorId, Decode, Encode, TypeInfo, Vec, collections::HashMap};
+use gmeta::{Metadata, InOut, In};
+use gstd::{ActorId, Decode, Encode, TypeInfo, Vec};
+
 
 pub struct KeeBeeMetadata;
 
-#[derive(Debug,Clone, Default)]
-pub struct KeeBeeShare {
-    pub shares_balance: HashMap<ActorId, HashMap<ActorId, u128>>,
-    pub share_supply: HashMap<ActorId, u128>,
-    pub manager: HashMap<ActorId, bool>,
-    pub protocol_fee_destination: ActorId,
-    pub protocol_fee_percent: u128,
-    pub subject_fee_percent: u128,
-    pub max_fee_percent: u128,
-    pub max_amount: u8,
-}
+
 
 impl Metadata for KeeBeeMetadata {
     type Init = In<InitConfig>;
@@ -23,7 +14,33 @@ impl Metadata for KeeBeeMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Out<IoKeeBeeShare>;
+    /// State message type.
+    ///
+    /// Describes the type for the queried state returned by the `state()`
+    /// function.
+    ///
+    /// We use a [`StateQuery`] and [`StateReply`]struct.
+    type State = InOut<StateQuery,StateReply>;
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum StateQuery {
+    Price {supply:u128,amount:u128},
+    BuyPrice { shares_subject: ActorId,amount:u128 },
+    SellPrice { shares_subject: ActorId,amount:u128 },
+    BuyPriceAfterFee{shares_subject: ActorId,amount:u128},
+    SellPriceAfterFee{shares_subject: ActorId,amount:u128},
+    FullState,
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum StateReply {
+    Price(u128),
+    FullState(IoKeeBeeShare),
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]

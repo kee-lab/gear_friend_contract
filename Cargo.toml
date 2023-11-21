@@ -12,14 +12,12 @@ resolver = "2"
 members = [
     "kee_bee_share",
     "kee_bee_share/kee-bee-io",
-    "kee_bee_share/state-v1"
 ]
 
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], tag = "v1.0.1" }
+gstd = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 gtest = { git = "https://github.com/gear-tech/gear.git", tag = "v1.0.1" }
 gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-scale-info = { version = "2.5.0", default-features = false }
-parity-scale-codec = { version = "3.6.4", default-features = false }
+primitive-types = { version = "0.12", default-features = false }

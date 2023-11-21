@@ -749,16 +749,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "demo-meta-state-v1"
-version = "0.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "kee-bee-io",
-]
-
-[[package]]
 name = "der"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1650,7 +1640,6 @@ dependencies = [
 name = "gear_friend_share"
 version = "0.1.1"
 dependencies = [
- "demo-meta-state-v1",
  "gear-wasm-builder",
  "gstd",
  "gtest",
@@ -1722,19 +1711,8 @@ source = "git+https://github.com/gear-tech/gear.git?tag=v1.0.1#a3fe307bd8e0bdef1
 dependencies = [
  "blake2-rfc",
  "derive_more",
- "gmeta-codegen",
  "hex",
  "scale-info",
-]
-
-[[package]]
-name = "gmeta-codegen"
-version = "1.0.1"
-source = "git+https://github.com/gear-tech/gear.git?tag=v1.0.1#a3fe307bd8e0bdef14b323c4e2361d7df824a5f2"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.39",
 ]
 
 [[package]]
@@ -2126,8 +2104,6 @@ version = "0.1.0"
 dependencies = [
  "gmeta",
  "gstd",
- "parity-scale-codec",
- "scale-info",
 ]
 
 [[package]]
