@@ -195,7 +195,7 @@ fn common_state(kee_bee_share:KeeBeeShare) -> IoKeeBeeShare {
         subject_fee_percent,
         max_fee_percent,
         max_amount,
-    } = state.clone();
+    } = kee_bee_share;
 
     let share_supply = share_supply.iter().map(|(k, v)| (*k, *v)).collect();
     let manager = manager.iter().map(|(k, v)| (*k, *v)).collect();
@@ -215,9 +215,6 @@ fn common_state(kee_bee_share:KeeBeeShare) -> IoKeeBeeShare {
     }
 }
 
-fn static_mut_state() -> &'static mut KeeBeeShare {
-    unsafe { KEE_BEE_SHARE.take().expect("get base state error!")};
-}
 
 #[no_mangle]
 extern "C" fn state() {
