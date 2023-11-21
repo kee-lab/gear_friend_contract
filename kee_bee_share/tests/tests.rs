@@ -38,6 +38,9 @@ fn buy_share() {
     let sys = System::new();
     init_with_mint(&sys);
     let ft = sys.get_program(1);
+    let state = ft.read_state(StateQuery::FullState);
+    println!("state is:{state:?}");
+
     let res = ft.send(
         USERS[0],
         KBAction::BuyShare {

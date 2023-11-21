@@ -220,7 +220,7 @@ fn common_state(kee_bee_share:KeeBeeShare) -> IoKeeBeeShare {
 extern "C" fn state() {
     let kee_bee_share = unsafe { KEE_BEE_SHARE.take().expect("Failed to get state") }.clone();
     let query: StateQuery = msg::load().expect("Unable to load the state query");
-    let stateReply: StateReply = match query {
+    let state_reply: StateReply = match query {
         StateQuery::Price { supply, amount } => {
             let price = kee_bee_share.get_price(supply, amount);
             StateReply::Price(price)
@@ -256,7 +256,7 @@ extern "C" fn state() {
         StateQuery::FullState => StateReply::FullState(common_state(kee_bee_share)),
     };
 
-    reply(stateReply)
+    reply(state_reply)
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
 }
 
