@@ -38,7 +38,7 @@ fn buy_share() {
         assert!(price == 0,"buy price error!");
     }
 
-    // buy first share by other pepole failed.
+    // buy first share by other people failed.
     let buy_share_res = ft.send(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[2].into(),
         amount: 1,
@@ -53,6 +53,8 @@ fn buy_share() {
         amount: 1,
     });
     assert!(!buy_share_res.main_failed());
+
+    println!("-------------------------------------");
     println!("buy_share_res is:{buy_share_res:?}");
 
 
