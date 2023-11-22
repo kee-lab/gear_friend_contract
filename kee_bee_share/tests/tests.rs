@@ -11,7 +11,7 @@ fn init_with_mint(sys: &System) {
     let res = ft.send(
         USERS[0],
         InitConfig {
-            protocol_fee_destination: USERS[1].into(),
+            protocol_fee_destination: USERS[2].into(),
             protocol_fee_percent: 50000000000000000,
             subject_fee_percent: 50000000000000000,
             max_fee_percent: 100000000000000000,
@@ -21,16 +21,6 @@ fn init_with_mint(sys: &System) {
 
     assert!(!res.main_failed());
 
-    // let res = ft.send(USERS[0], FTAction::Mint(1000000));
-    // assert!(res.contains(&(
-    //     USERS[0],
-    //     FTEvent::Transfer {
-    //         from: 0.into(),
-    //         to: USERS[0].into(),
-    //         amount: 1000000,
-    //     }
-    //     .encode()
-    // )));
 }
 
 #[test]
@@ -38,21 +28,39 @@ fn buy_share() {
     let sys = System::new();
     init_with_mint(&sys);
     let ft = sys.get_program(1);
-    let state = ft.read_state(StateQuery::FullState);
-    println!("state is:{state:?}");
+    let state:StateReply = ft.read_state(StateQuery::FullState).expect("read fullstate error");
+    if let StateReply::FullState(io_kee_bee_share) = state{
+        assert!(io_kee_bee_share.protocol_fee_percent==50000000000000000,"protocolFeePercent test fail");
+        assert!(io_kee_bee_share.subject_fee_percent==50000000000000000,"subject_fee_percent test fail");
+    }
+    let buy_price:StateReply = ft.read_state(StateQuery::BuyPrice { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
+    if let StateReply::Price(price) = buy_price{
+        assert!(price == 0,"buy price error!");
+    }
 
-    let res = ft.send(
-        USERS[0],
-        KBAction::BuyShare {
-            shares_subject: USERS[0].into(),
-            amount: 1,
-        },
-    );
-    assert!(res.contains(&(
-        USERS[0],
+    // buy first share by other pepole failed.
+    let buy_share_res = ft.send(USERS[1], KBAction::BuyShare {
+        shares_subject: USERS[2].into(),
+        amount: 1,
+    });
+    assert!(buy_share_res.main_failed());
+    println!("buy_share_res is:{buy_share_res:?}");
+
+
+    // buy first share by self success.
+    let buy_share_res = ft.send(USERS[1], KBAction::BuyShare {
+        shares_subject: USERS[1].into(),
+        amount: 1,
+    });
+    assert!(!buy_share_res.main_failed());
+    println!("buy_share_res is:{buy_share_res:?}");
+
+
+    assert!(buy_share_res.contains(&(
+        USERS[1],
         KBEvent::Trade {
-            trader: USERS[0].into(),
-            subject: USERS[0].into(),
+            trader: USERS[1].into(),
+            subject: USERS[2].into(),
             is_buy: true,
             share_amount: 1,
             eth_amount: 0,

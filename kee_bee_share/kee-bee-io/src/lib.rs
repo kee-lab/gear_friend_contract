@@ -35,7 +35,7 @@ pub enum StateQuery {
     FullState,
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(Debug,Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {

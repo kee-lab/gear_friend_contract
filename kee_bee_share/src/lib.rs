@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId};
+use gstd::{collections::HashMap, msg, prelude::*, ActorId, MessageId, debug};
 use kee_bee_io::{InitConfig, IoKeeBeeShare, KBAction, KBEvent, StateQuery, StateReply};
 
 pub mod utils;
@@ -127,6 +127,7 @@ impl KeeBeeShare {
     pub fn sell_shares(&mut self, shares_subject: ActorId, amount: u128) {
         let supply = self.share_supply.get(&shares_subject).unwrap_or(&0).clone();
         let trader = msg::source();
+        debug!("supply:{supply:?},debug is:{amount:?}");
         assert!(supply > amount, "Cannot sell the last share");
         let price = self.get_price(supply - amount, amount);
         let protocol_fee = price * self.protocol_fee_percent / ETH1;
