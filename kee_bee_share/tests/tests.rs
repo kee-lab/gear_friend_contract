@@ -1,4 +1,4 @@
-use gstd::{Encode};
+use gstd::Encode;
 use gtest::{Program, System};
 use kee_bee_io::*;
 const USERS: &[u64] = &[3, 4, 5];
@@ -27,27 +27,41 @@ fn init_with_mint(sys: &System) {
 fn buy_share() {
     let sys = System::new();
     init_with_mint(&sys);
+    const ETH1: u128 = 10u128.pow(18);
     let ft = sys.get_program(1);
-    let state:StateReply = ft.read_state(StateQuery::FullState).expect("read fullstate error");
-    if let StateReply::FullState(io_kee_bee_share) = state{
-        assert!(io_kee_bee_share.protocol_fee_percent==50000000000000000,"protocolFeePercent test fail");
-        assert!(io_kee_bee_share.subject_fee_percent==50000000000000000,"subject_fee_percent test fail");
-    }
-    let buy_price:StateReply = ft.read_state(StateQuery::BuyPrice { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
-    if let StateReply::Price(price) = buy_price{
-        assert!(price == 0,"buy price error!");
-    }
-
     // buy first share by other people failed.
     let buy_share_res = ft.send(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[2].into(),
         amount: 1,
     });
     assert!(buy_share_res.main_failed());
-    println!("buy_share_res is:{buy_share_res:?}");
+    // println!("buy_share_res is:{buy_share_res:?}");
+    println!("end buy first share by other people failed-----------------");
 
+    // buy share amount too high
+    // await expect(keeBeeSharesV1Contract.connect(friend).buyShares(friend.address,2,{from:friend.address,value:buySharePrice})).to.be.revertedWith("amount too high");
+    let buy_share_amount_too_high = ft.send(USERS[1], KBAction::BuyShare {
+        shares_subject: USERS[1].into(),
+        amount: 2,
+    });
+
+    assert!(buy_share_amount_too_high.main_failed());
+    println!("buy share amount too high-----------------");
+    
 
     // buy first share by self success.
+
+    let state:StateReply = ft.read_state(StateQuery::FullState).expect("read fullstate error");
+    if let StateReply::FullState(io_kee_bee_share) = state{
+        assert!(io_kee_bee_share.protocol_fee_percent==50000000000000000,"protocolFeePercent test fail");
+        assert!(io_kee_bee_share.subject_fee_percent==50000000000000000,"subject_fee_percent test fail");
+    }
+
+    let buy_price:StateReply = ft.read_state(StateQuery::BuyPrice { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
+    if let StateReply::Price(price) = buy_price{
+        assert!(price == 0,"buy price error!");
+    }
+
     let buy_share_res = ft.send(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[1].into(),
         amount: 1,
@@ -55,14 +69,14 @@ fn buy_share() {
     assert!(!buy_share_res.main_failed());
 
     println!("-------------------------------------");
-    println!("buy_share_res is:{buy_share_res:?}");
-
+    // let buy_share_log = buy_share_res.log();
+    // println!("buy_share_log is:{buy_share_log:?}");
 
     assert!(buy_share_res.contains(&(
         USERS[1],
         KBEvent::Trade {
             trader: USERS[1].into(),
-            subject: USERS[2].into(),
+            subject: USERS[1].into(),
             is_buy: true,
             share_amount: 1,
             eth_amount: 0,
@@ -71,6 +85,49 @@ fn buy_share() {
             supply: 1
         }.encode()
     )));
+
+
+    let buy_second_price:StateReply = ft.read_state(StateQuery::Price{supply: 1, amount: 1 }).expect("read buy price error!");
+    let mut price:u128=0;
+    if let StateReply::Price(p)=buy_second_price{
+        price = p;
+    }
+    println!("price is-----------------------:{:?}",price);
+    let protocol_fee = price*50000000000000000/ETH1;
+    println!("protocol_fee is-----------------------:{:?}",protocol_fee);
+    let subject_fee = price*50000000000000000/ETH1;
+    println!("subject_fee is-----------------------:{:?}",subject_fee);
+
+    let buy_second_price_after_fee:StateReply = ft.read_state(StateQuery::BuyPriceAfterFee { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
+    println!("buy_second_price_after_fee is:{:?}",buy_second_price_after_fee);
+    if let StateReply::Price(price) = buy_second_price_after_fee{
+        assert!(price == 68750000000000,"buy price error!");
+    }
+    sys.mint_to(USERS[1], 68750000000000);
+    // buy share second time
+    let buy_second_share_res = ft.send_with_value(USERS[1], KBAction::BuyShare {
+        shares_subject: USERS[1].into(),
+        amount: 1,
+    },68750000000000);
+
+    assert!(!buy_second_share_res.main_failed());
+    
+    assert!(buy_second_share_res.contains(&(
+        USERS[1],
+        KBEvent::Trade {
+            trader: USERS[1].into(),
+            subject: USERS[1].into(),
+            is_buy: true,
+            share_amount: 1,
+            eth_amount: price,
+            protocol_eth_amount: protocol_fee,
+            subject_eth_amount: subject_fee,
+            supply: 2
+        }.encode()
+    )));
+
+    // start to sell the share
+
 }
 
 // #[test]

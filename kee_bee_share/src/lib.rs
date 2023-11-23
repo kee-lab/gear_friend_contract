@@ -85,6 +85,7 @@ impl KeeBeeShare {
     pub fn buy_shares(&mut self, shares_subject: ActorId, amount: u128) {
         let supply = self.share_supply.get(&shares_subject).unwrap_or(&0).clone();
         let trader = msg::source();
+        debug!("supply:{supply:?},amount is:{amount:?}");
         assert!(
             supply > 0 || shares_subject == trader,
             "Only the shares' subject can buy the first share"
@@ -121,6 +122,7 @@ impl KeeBeeShare {
             subject_eth_amount: subject_fee,
             supply: supply + amount,
         };
+        debug!("trade is:{trade:?}");
         msg::reply(trade, 0).unwrap();
     }
 
