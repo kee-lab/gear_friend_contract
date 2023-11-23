@@ -150,7 +150,8 @@ impl KeeBeeShare {
         self.share_supply
             .entry(shares_subject)
             .and_modify(|supply| *supply -= amount);
-
+        debug!("price - protocol_fee - subject_fee is:{:?}",price - protocol_fee - subject_fee);
+        
         msg::send(trader, "", price - protocol_fee - subject_fee).unwrap();
         msg::send(self.protocol_fee_destination, "", protocol_fee).unwrap();
         msg::send(shares_subject, "", subject_fee).expect("send subject fee fail");
@@ -162,8 +163,9 @@ impl KeeBeeShare {
             eth_amount: price,
             protocol_eth_amount: protocol_fee,
             subject_eth_amount: subject_fee,
-            supply: supply + amount,
+            supply: supply - amount,
         };
+        debug!("sell trade is:{trade:?}");
         msg::reply(trade, 0).unwrap();
     }
 

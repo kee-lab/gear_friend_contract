@@ -86,7 +86,7 @@ fn buy_share() {
         }.encode()
     )));
 
-
+    // buy share twice
     let buy_second_price:StateReply = ft.read_state(StateQuery::Price{supply: 1, amount: 1 }).expect("read buy price error!");
     let mut price:u128=0;
     if let StateReply::Price(p)=buy_second_price{
@@ -104,7 +104,7 @@ fn buy_share() {
         assert!(price == 68750000000000,"buy price error!");
     }
     sys.mint_to(USERS[1], 68750000000000);
-    // buy share second time
+    
     let buy_second_share_res = ft.send_with_value(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[1].into(),
         amount: 1,
@@ -127,6 +127,52 @@ fn buy_share() {
     )));
 
     // start to sell the share
+    let sell_first_price:StateReply = ft.read_state(StateQuery::Price{supply: 2-1, amount: 1 }).expect("read price error!");
+    if let StateReply::Price(p) = sell_first_price{
+        price = p;
+    }
+    println!("price is-----------------------:{:?}",price);
+    let protocol_fee = price*50000000000000000/ETH1;
+    println!("protocol_fee is-----------------------:{:?}",protocol_fee);
+    let subject_fee = price*50000000000000000/ETH1;
+    println!("subject_fee is-----------------------:{:?}",subject_fee);
+
+    let sell_second_price_after_fee:StateReply = ft
+        .read_state(StateQuery::SellPriceAfterFee { shares_subject: USERS[1].into(), amount: 1 })
+        .expect("read buy price error!");
+    println!("sell_second_price_after_fee is:{:?}",sell_second_price_after_fee);
+
+    let sell_second_share_res = ft.send(USERS[1], KBAction::SellShare {
+        shares_subject: USERS[1].into(),
+        amount: 1,
+    });
+
+    assert!(!sell_second_share_res.main_failed());
+
+    assert!(sell_second_share_res.contains(&(
+        USERS[1],
+        KBEvent::Trade {
+            trader: USERS[1].into(),
+            subject: USERS[1].into(),
+            is_buy: false,
+            share_amount: 1,
+            eth_amount: price,
+            protocol_eth_amount: protocol_fee,
+            subject_eth_amount: subject_fee,
+            supply: 1
+        }.encode()
+    )));
+    sys.mint_to(USERS[1], 1000);
+    let balance_user1 = sys.balance_of(USERS[1]);
+    // TODO: check the balance of user1
+    println!("balance_user1: {:?}", balance_user1);
+    // start to sell first
+    let sell_first_share_res = ft.send(USERS[1], KBAction::SellShare {
+        shares_subject: USERS[1].into(),
+        amount: 1,
+    });
+
+    assert!(sell_first_share_res.main_failed());
 
 }
 
