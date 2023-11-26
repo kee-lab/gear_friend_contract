@@ -6,7 +6,7 @@ use kee_bee_io::{InitConfig, IoKeeBeeShare, KBAction, KBEvent, StateQuery, State
 pub mod utils;
 
 static mut KEE_BEE_SHARE: Option<KeeBeeShare> = None;
-const ETH1: u128 = 10u128.pow(18);
+const ETH1: u128 = 10u128.pow(12);
 
 #[derive(Debug, Clone, Default)]
 pub struct KeeBeeShare {
@@ -151,10 +151,13 @@ impl KeeBeeShare {
             .entry(shares_subject)
             .and_modify(|supply| *supply -= amount);
         debug!("price - protocol_fee - subject_fee is:{:?}",price - protocol_fee - subject_fee);
+        debug!("trader is:{:?}",trader);
+
         
-        msg::send(trader, "", price - protocol_fee - subject_fee).unwrap();
-        msg::send(self.protocol_fee_destination, "", protocol_fee).unwrap();
-        msg::send(shares_subject, "", subject_fee).expect("send subject fee fail");
+
+        msg::send(trader, (), price - protocol_fee - subject_fee).unwrap();
+        msg::send(self.protocol_fee_destination, (), protocol_fee).unwrap();
+        msg::send(shares_subject, (), subject_fee).expect("send subject fee fail");
         let trade = KBEvent::Trade {
             trader,
             subject: shares_subject,

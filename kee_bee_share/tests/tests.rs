@@ -12,9 +12,9 @@ fn init_with_mint(sys: &System) {
         USERS[0],
         InitConfig {
             protocol_fee_destination: USERS[2].into(),
-            protocol_fee_percent: 50000000000000000,
-            subject_fee_percent: 50000000000000000,
-            max_fee_percent: 100000000000000000,
+            protocol_fee_percent: 50000000000,
+            subject_fee_percent: 50000000000,
+            max_fee_percent: 100000000000,
             max_amount: 1,
         },
     );
@@ -27,8 +27,8 @@ fn init_with_mint(sys: &System) {
 fn buy_share() {
     let sys = System::new();
     init_with_mint(&sys);
-    const ETH1: u128 = 10u128.pow(18);
-    let ft = sys.get_program(1);
+    const ETH1: u128 = 10u128.pow(12);
+    let mut ft = sys.get_program(1);
     // buy first share by other people failed.
     let buy_share_res = ft.send(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[2].into(),
@@ -53,8 +53,8 @@ fn buy_share() {
 
     let state:StateReply = ft.read_state(StateQuery::FullState).expect("read fullstate error");
     if let StateReply::FullState(io_kee_bee_share) = state{
-        assert!(io_kee_bee_share.protocol_fee_percent==50000000000000000,"protocolFeePercent test fail");
-        assert!(io_kee_bee_share.subject_fee_percent==50000000000000000,"subject_fee_percent test fail");
+        assert!(io_kee_bee_share.protocol_fee_percent==50000000000,"protocolFeePercent test fail");
+        assert!(io_kee_bee_share.subject_fee_percent==50000000000,"subject_fee_percent test fail");
     }
 
     let buy_price:StateReply = ft.read_state(StateQuery::BuyPrice { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
@@ -93,22 +93,22 @@ fn buy_share() {
         price = p;
     }
     println!("price is-----------------------:{:?}",price);
-    let protocol_fee = price*50000000000000000/ETH1;
+    let protocol_fee = price*50000000000/ETH1;
     println!("protocol_fee is-----------------------:{:?}",protocol_fee);
-    let subject_fee = price*50000000000000000/ETH1;
+    let subject_fee = price*50000000000/ETH1;
     println!("subject_fee is-----------------------:{:?}",subject_fee);
 
     let buy_second_price_after_fee:StateReply = ft.read_state(StateQuery::BuyPriceAfterFee { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
     println!("buy_second_price_after_fee is:{:?}",buy_second_price_after_fee);
     if let StateReply::Price(price) = buy_second_price_after_fee{
-        assert!(price == 68750000000000,"buy price error!");
+        assert!(price == 68750000,"buy price error!");
     }
-    sys.mint_to(USERS[1], 68750000000000);
+    sys.mint_to(USERS[1], 68750000);
     
     let buy_second_share_res = ft.send_with_value(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[1].into(),
         amount: 1,
-    },68750000000000);
+    },68750000);
 
     assert!(!buy_second_share_res.main_failed());
     
@@ -132,16 +132,18 @@ fn buy_share() {
         price = p;
     }
     println!("price is-----------------------:{:?}",price);
-    let protocol_fee = price*50000000000000000/ETH1;
+    let protocol_fee = price*50000000000/ETH1;
     println!("protocol_fee is-----------------------:{:?}",protocol_fee);
-    let subject_fee = price*50000000000000000/ETH1;
+    let subject_fee = price*50000000000/ETH1;
     println!("subject_fee is-----------------------:{:?}",subject_fee);
 
     let sell_second_price_after_fee:StateReply = ft
         .read_state(StateQuery::SellPriceAfterFee { shares_subject: USERS[1].into(), amount: 1 })
         .expect("read buy price error!");
     println!("sell_second_price_after_fee is:{:?}",sell_second_price_after_fee);
+    
 
+    sys.mint_to(USERS[1], 1000000000000000000000);
     let sell_second_share_res = ft.send(USERS[1], KBAction::SellShare {
         shares_subject: USERS[1].into(),
         amount: 1,
@@ -162,8 +164,10 @@ fn buy_share() {
             supply: 1
         }.encode()
     )));
-    sys.mint_to(USERS[1], 1000);
+    
     let balance_user1 = sys.balance_of(USERS[1]);
+    let contract_balance=ft.balance();
+    println!("after sell contract_balance: {:?}", contract_balance);
     // TODO: check the balance of user1
     println!("balance_user1: {:?}", balance_user1);
     // start to sell first
