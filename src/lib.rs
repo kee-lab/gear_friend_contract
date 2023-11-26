@@ -216,7 +216,6 @@ fn static_mut_state() -> &'static mut KeeBeeShare {
 
 #[no_mangle]
 extern fn state() {
-    let query:StateQuery = msg::load().expect("Failed to get state");
     reply(common_state())
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
 }
