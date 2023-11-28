@@ -7,7 +7,7 @@ fn init_with_mint(sys: &System) {
     sys.init_logger();
     // load the contract.
     let ft = Program::current_opt(sys);
-
+    // 68750000
     let res = ft.send(
         USERS[0],
         InitConfig {
