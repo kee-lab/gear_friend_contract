@@ -108,7 +108,7 @@ impl KeeBeeShare {
             .entry(shares_subject)
             .and_modify(|supply| *supply += amount)
             .or_insert(amount);
-        msg::send(self.protocol_fee_destination, "", protocol_fee).expect("send ptotocal fee fail");
+        msg::send(self.protocol_fee_destination, "", protocol_fee).expect(&format!("send ptotocal fee fail,protocol_fee is:{},msg value is:{}",protocol_fee,msg::value()));
         msg::send(shares_subject, "", subject_fee).expect("send subject fee fail");
 
         // Trade(msg.sender, sharesSubject, true, amount, price, protocolFee, subjectFee, supply + amount);
