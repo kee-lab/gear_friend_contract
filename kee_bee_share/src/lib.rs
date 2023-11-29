@@ -51,7 +51,7 @@ impl KeeBeeShare {
             (supply - 1 + amount) * (supply + amount) * (2 * (supply - 1 + amount) + 1) / 6
         };
         let summation = sum2 - sum1;
-        return summation * ETH1 / 16000u128;
+        return summation * ETH1 * 100;
     }
 
     pub fn get_buy_price(&self, shares_subject: ActorId, amount: u128) -> u128 {

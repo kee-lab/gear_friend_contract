@@ -12,8 +12,8 @@ fn init_with_mint(sys: &System) {
         USERS[0],
         InitConfig {
             protocol_fee_destination: USERS[2].into(),
-            protocol_fee_percent: 50000000000,
-            subject_fee_percent: 50000000000,
+            protocol_fee_percent: 100000000000,
+            subject_fee_percent: 100000000000,
             max_fee_percent: 100000000000,
             max_amount: 1,
         },
@@ -53,8 +53,8 @@ fn buy_share() {
 
     let state:StateReply = ft.read_state(StateQuery::FullState).expect("read fullstate error");
     if let StateReply::FullState(io_kee_bee_share) = state{
-        assert!(io_kee_bee_share.protocol_fee_percent==50000000000,"protocolFeePercent test fail");
-        assert!(io_kee_bee_share.subject_fee_percent==50000000000,"subject_fee_percent test fail");
+        assert!(io_kee_bee_share.protocol_fee_percent==100000000000,"protocolFeePercent test fail");
+        assert!(io_kee_bee_share.subject_fee_percent==100000000000,"subject_fee_percent test fail");
     }
 
     let buy_price:StateReply = ft.read_state(StateQuery::BuyPrice { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
@@ -93,22 +93,22 @@ fn buy_share() {
         price = p;
     }
     println!("price is-----------------------:{:?}",price);
-    let protocol_fee = price*50000000000/ETH1;
+    let protocol_fee = price*100000000000/ETH1;
     println!("protocol_fee is-----------------------:{:?}",protocol_fee);
-    let subject_fee = price*50000000000/ETH1;
+    let subject_fee = price*100000000000/ETH1;
     println!("subject_fee is-----------------------:{:?}",subject_fee);
 
     let buy_second_price_after_fee:StateReply = ft.read_state(StateQuery::BuyPriceAfterFee { shares_subject: USERS[1].into(), amount: 1 }).expect("read buy price error!");
     println!("buy_second_price_after_fee is:{:?}",buy_second_price_after_fee);
-    if let StateReply::Price(price) = buy_second_price_after_fee{
-        assert!(price == 68750000,"buy price error!");
+    if let StateReply::Price(price_after_fee) = buy_second_price_after_fee{
+        assert!(price_after_fee == 120000000000000,"buy price error!");
     }
-    sys.mint_to(USERS[1], 68750000);
+    sys.mint_to(USERS[1], 100000000000000);
     
     let buy_second_share_res = ft.send_with_value(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[1].into(),
         amount: 1,
-    },68750000);
+    },120000000000000);
 
     assert!(!buy_second_share_res.main_failed());
     
@@ -132,9 +132,9 @@ fn buy_share() {
         price = p;
     }
     println!("price is-----------------------:{:?}",price);
-    let protocol_fee = price*50000000000/ETH1;
+    let protocol_fee = price*100000000000/ETH1;
     println!("protocol_fee is-----------------------:{:?}",protocol_fee);
-    let subject_fee = price*50000000000/ETH1;
+    let subject_fee = price*100000000000/ETH1;
     println!("subject_fee is-----------------------:{:?}",subject_fee);
 
     let sell_second_price_after_fee:StateReply = ft
