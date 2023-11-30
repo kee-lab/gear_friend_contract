@@ -103,7 +103,7 @@ fn buy_share() {
     if let StateReply::Price(price_after_fee) = buy_second_price_after_fee{
         assert!(price_after_fee == 120000000000000,"buy price error!");
     }
-    sys.mint_to(USERS[1], 100000000000000);
+    sys.mint_to(USERS[1], 120000000000000);
     
     let buy_second_share_res = ft.send_with_value(USERS[1], KBAction::BuyShare {
         shares_subject: USERS[1].into(),
