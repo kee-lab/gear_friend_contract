@@ -263,12 +263,12 @@ extern "C" fn state() {
         }
         StateQuery::FullState => StateReply::FullState(common_state(kee_bee_share)),
         StateQuery::SubjectShareUser { subject, user } => {
-            let share_amount=kee_bee_share.shares_balance
-                .entry(subject)
-                .or_default()
-                .entry(user)
-                .or_default();
-            StateReply::ShareAmount(share_amount)
+            let share_amount = kee_bee_share.shares_balance
+                .get(&subject)
+                .expect("subject not exist")
+                .get(&user)
+                .expect("user not exist");
+            StateReply::ShareAmount(*share_amount)
         },
     };
 
