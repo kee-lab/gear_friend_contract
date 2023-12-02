@@ -262,6 +262,14 @@ extern "C" fn state() {
             StateReply::Price(price)
         }
         StateQuery::FullState => StateReply::FullState(common_state(kee_bee_share)),
+        StateQuery::SubjectShareUser { subject, user } => {
+            let share_amount=kee_bee_share.shares_balance
+                .entry(subject)
+                .or_default()
+                .entry(user)
+                .or_default();
+            StateReply::ShareAmount(share_amount)
+        },
     };
 
     reply(state_reply)
