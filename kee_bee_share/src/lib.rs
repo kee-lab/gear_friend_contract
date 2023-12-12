@@ -85,6 +85,8 @@ impl KeeBeeShare {
     pub fn buy_shares(&mut self, shares_subject: ActorId, amount: u128) {
         let supply = self.share_supply.get(&shares_subject).unwrap_or(&0).clone();
         let trader = msg::source();
+        
+        debug!("shares_subject:{shares_subject:?},trader is:{trader:?}");
         debug!("supply:{supply:?},amount is:{amount:?}");
         assert!(
             supply > 0 || shares_subject == trader,
@@ -283,6 +285,7 @@ fn reply(payload: impl Encode) -> gstd::errors::Result<MessageId> {
 #[no_mangle]
 extern "C" fn handle() {
     let action: KBAction = msg::load().expect("Could not load Action");
+    debug!("action is-----------:{action:?}");
     let kee_bee_share: &mut KeeBeeShare =
         unsafe { KEE_BEE_SHARE.get_or_insert(Default::default()) };
     match action {
